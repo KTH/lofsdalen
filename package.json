@@ -1,0 +1,33 @@
+{
+  "name": "lofsdalen",
+  "version": "0.0.0",
+  "description": "Default paths and error pages for uri:s.",
+  "main": "app.js",
+  "private": false,
+  "license": "MIT License",
+  "dependencies": {
+    "applicationinsights": "^1.6.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "kth-node-api-call": "^3.0.5",
+    "kth-node-log": "^3.0.2",
+    "node-fetch": "^2.6.0",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "nodemon": "^2.0.1"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "start-dev": "LOG_LEVEL=debug PORT=3000 nodemon app.js",
+    "test": "NODE_ENV=development node_modules/mocha/bin/mocha ./tests/unit-tests/test-*.js",
+    "test-integration-in-docker": "ID=$(docker build -q .) && LOCAL_IMAGE_ID=$ID docker-compose -f docker-compose-integration-tests.yml up --abort-on-container-exit --always-recreate-deps",
+    "test-unit-in-docker": "ID=$(docker build -q .) && LOCAL_IMAGE_ID=$ID docker-compose -f docker-compose-unit-tests.yml up --abort-on-container-exit --always-recreate-deps"
+  },
+  "engines": {
+    "node": "^12.0.0"
+  }
+}
