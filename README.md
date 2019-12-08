@@ -109,8 +109,8 @@ Get git commit date or full commit from Github for a repo.
 ```json
 {
   "commited": "2019-12-04T11:41:29Z",
-  "commitedAsTimestamp": 1575459689,
-  "now": 1575835581.242,
+  "commitedTimestamp": 1575459689,
+  "nowTimestamp": 1575835581.242,
   "durationMs": 375892.242000103,
   "readable": "4 days ago"
 }
