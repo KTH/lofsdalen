@@ -18,7 +18,8 @@ const nowTimestamp = () => {
 /**
  * Returns informtatoin about when the commit was done.
  *
- * Returns a json object like
+ * Returns a json object like:
+ *
  * {
  *  "commited":"2019-12-04T11:41:29Z",
  *  "commitedTimestamp":1575459689,
@@ -26,6 +27,7 @@ const nowTimestamp = () => {
  *  "durationMs":375892.242000103,
  *  "readable":"4 days ago"
  * }
+ *
  * @param {*} commit a git commit as json
  */
 const when = commit => {
