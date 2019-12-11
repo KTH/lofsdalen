@@ -44,7 +44,7 @@ app.get("/api/lofsdalen/v1/:name/:commit", async function(req, response) {
   const commitJson = await git.getCommit(repositoryName, commit);
 
   if (commitJson) {
-    httpResponse.ok(req, res, controller.when(commitJson));
+    httpResponse.ok(req, res, commitJson);
   } else {
     httpResponse.notFound(
       req,
