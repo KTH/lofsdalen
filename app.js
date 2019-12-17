@@ -39,9 +39,12 @@ app.get("/api/lofsdalen", function(req, response) {
 /**
  * About page. Versions and such.
  */
-app.get("/api/lofsdalen/v1/:name/:commit", async function(req, response) {
+app.get("/api/lofsdalen/v1/:repositoryName/:commit", async function(req, res) {
   const { repositoryName, commit } = req.params;
   const commitJson = await git.getCommit(repositoryName, commit);
+
+  console.log(repositoryName);
+  console.log(commit);
 
   if (commitJson) {
     httpResponse.ok(req, res, commitJson);
