@@ -14,14 +14,8 @@ const packageFile = require("../package.json");
  * log.trace('granular logging, rarely used')
  */
 let _getLogLevel = function getLogLevel() {
-  result = "info";
-
-  if (process.env.LOG_LEVEL != null) {
-    result = process.env.LOG_LEVEL;
-  }
-
-  console.log(`Loglevel: '${result}'`);
-
+  const result = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : "info";
+  console.log(`Loglevel (Change by env LOG_LEVEL): '${result}'`);
   return result;
 };
 

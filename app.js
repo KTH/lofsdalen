@@ -14,16 +14,23 @@ const packageFile = require("./package.json");
 /**
  * Start server on port 80, or use port specifed in env PORT.
  */
-app.getListenPort = function() {
+app.pathPrefix = function() {
+  return process.env.PATH_PREFIX ? process.env.PATH_PREFIX : "/api/lofsdalen";
+};
+
+/**
+ * Start server on port 80, or use port specifed in env PORT.
+ */
+app.port = function() {
   return process.env.PORT ? process.env.PORT : 80;
 };
 
 /**
  * Start the server on configured port.
  */
-app.listen(app.getListenPort(), function() {
+app.listen(app.port(), function() {
   logger.log.info(
-    `Started ${packageFile.name} on ${os.hostname()}:${app.getListenPort()}`
+    `Started ${packageFile.name} on ${os.hostname()}:${app.port()}`
   );
 });
 
@@ -32,19 +39,19 @@ app.listen(app.getListenPort(), function() {
 /**
  * Index page.
  */
-app.get("/api/lofsdalen", function(req, response) {
+app.get(`${app.pathPrefix}`, function(req, response) {
   httpResponse.ok(req, response, templates.index());
 });
 
 /**
- * About page. Versions and such.
+ * Gets the full information about a commit as json.
+ *
+ * http://localhost:3000/api/lofsdalen/v1/lofsdalen/4b1c21f
+ *
  */
-app.get("/api/lofsdalen/v1/:repositoryName/:commit", async function(req, res) {
-  const { repositoryName, commit } = req.params;
-  const commitJson = await git.getCommit(repositoryName, commit);
-
-  console.log(repositoryName);
-  console.log(commit);
+app.get(`${app.pathPrefix}/v1/:repoName/:commit`, async function(req, res) {
+  const { repoName, commit } = req.params;
+  const commitJson = await git.getCommit(repoName, commit);
 
   if (commitJson) {
     httpResponse.ok(req, res, commitJson);
@@ -53,7 +60,7 @@ app.get("/api/lofsdalen/v1/:repositoryName/:commit", async function(req, res) {
       req,
       res,
       {
-        Message: `Cound not find any commit matching '${repositoryName}' and hash  '${commit}'.`
+        Message: `Cound not find any commit matching '${repoName}' and hash  '${commit}'.`
       },
       httpResponse.contentTypes.JSON
     );
@@ -61,14 +68,25 @@ app.get("/api/lofsdalen/v1/:repositoryName/:commit", async function(req, res) {
 });
 
 /**
- * About page. Versions and such.
+ * Get information about when the commit happend.
+ *
+ * http://localhost:3000/api/lofsdalen/v1/lofsdalen/4b1c21f/when
+ *
+ * E.h:
+ * {
+ *  "commited":"2019-12-04T11:41:29Z",
+ *  "commitedTimestamp":1575459689,
+ *  "nowTimestamp":1576754084.048,
+ *  "durationMs":1294395.0480000973,
+ *  "readable":"15 days ago"
+ * }
  */
-app.get("/api/lofsdalen/v1/:repositoryName/:commit/when", async function(
+app.get(`${app.pathPrefix()}/v1/:repoName/:commit/when`, async function(
   req,
   res
 ) {
-  const { repositoryName, commit } = req.params;
-  const commitJson = await git.getCommit(repositoryName, commit);
+  const { repoName, commit } = req.params;
+  const commitJson = await git.getCommit(repoName, commit);
 
   if (commitJson) {
     httpResponse.ok(req, res, controller.when(commitJson));
@@ -77,7 +95,7 @@ app.get("/api/lofsdalen/v1/:repositoryName/:commit/when", async function(
       req,
       res,
       {
-        Message: `Cound not find any commit matching '${repositoryName}' and hash  '${commit}'.`
+        Message: `Cound not find any commit matching '${repoName}' and hash  '${commit}'.`
       },
       httpResponse.contentTypes.JSON
     );
@@ -87,7 +105,7 @@ app.get("/api/lofsdalen/v1/:repositoryName/:commit/when", async function(
 /**
  * Health check route.
  */
-app.get("/api/lofsdalen/_monitor", function(req, res) {
+app.get(`${app.pathPrefix}/_monitor`, function(req, res) {
   httpResponse.ok(
     req,
     res,
@@ -99,14 +117,14 @@ app.get("/api/lofsdalen/_monitor", function(req, res) {
 /**
  * Information about the application.
  */
-app.get("/api/lofsdalen/_about", function(req, res) {
+app.get(`${app.pathPrefix}/_about`, function(req, res) {
   httpResponse.ok(req, res, templates._about(), httpResponse.contentTypes.HTML);
 });
 
 /**
  * Crawler access definitions.
  */
-app.get("/api/lofsdalen/robots.txt", function(req, res) {
+app.get(`${app.pathPrefix}/robots.txt`, function(req, res) {
   httpResponse.ok(
     req,
     res,

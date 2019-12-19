@@ -174,85 +174,6 @@ let error404 = function error404() {
 };
 
 /**
- * 502 error page Bad Gateway
- */
-let error5xx = function error5xx(request) {
-  return `
-    ${header(`Sorry, the service is not working as intended`)}
-            
-            <script>
-                let url = "/_application?pathname=" + encodeURI(document.location.pathname);
-                console.log(url)
-                fetch(url).then(
-                    function (response) {
-                        if (response.status !== 200) {
-                            console.log('Could not get application information. Status Code: ' + response.status);
-                            return;
-                        }
-
-                        response.json().then(function (data) {
-                            let importance = data.importance;
-                            if (importance != null) {
-                                document.getElementById('importance').classList.add("alert-info");
-
-                                let elements = document.getElementsByClassName('publicName');
-                                [].slice.call(elements).forEach(function (element) {
-                                    element.innerHTML = data.publicNameEnglish;
-                                });
-                                document.getElementById('importance-' + importance).style.display = "block";
-                            }
-                        });
-                    }
-                )
-                .catch(function (err) {
-                    console.log('Error when getting application information.', err);
-                });
-            </script>
-
-            <h1><span class="publicName">The service</span> does not work at the moment!</h1>
-            
-            <div aria-live="polite" role="alert" id="importance" class="alert">
-
-                <div id="importance-high" class="importance">
-                <h3>Expect <span class="publicName">the service</span> to be back soon</h3>
-                    <span class="importance-marker high"></span> <span class="publicName">This application</span> is classified as beeing of <strong>high importance</strong>.
-                    This means that it is actively monitored by operations personal during office hours.
-                    Operations are on call until midnight. Action to bring back the service is
-                    normally taken within 15 minutes during office hours, and within one hour during On call hours.
-                    <br /><br />
-                    We are sorry for the inconvenience this might cause you!
-
-                </div>
-
-                <div id="importance-medium" class="importance">
-                    <h3>Expect <span class="publicName">the service</span> to be back within 2 hours</h3>
-                    <span class="importance-marker medium"></span> <span class="publicName">This service</span> is actively monitored by operations
-                    personal during office hours. Action to bring back the service is normally taken within 2 hours. Outages outside
-                    office hours are handled the following morning.
-                    <br /><br />
-                    We are sorry for the inconvenience this might cause you!
-                </div>
-
-                <div id="importance-low" class="importance">
-                    <h3><span class="publicName">The service</span> should be back within a day</h3>
-                    <span class="importance-marker low"></span> Unfortunatelly this service is classified as having a low impact, compared to other services. 
-                    There for you can only expect <span class="publicName">the service</span> to work normally within a day.
-                    <br><br>
-                    Hopefully it will be back sooner :)
-                </div>
-
-            </div>
-
-            <div class="team-alerted">
-                The team responsible for the service have been alerted.
-                For current application status, please see our <a href="https://www.kthstatus.se/">status page</a>.
-            </div>
-
-        ${footer(statusCodes.INTERNAL_SERVER_ERROR)}
-    `;
-};
-
-/**
  * Index page.
  */
 let index = function index() {
@@ -274,27 +195,7 @@ let _robotstxt = function robotstxt() {
  * Monitor page
  */
 let _monitor = function _monitor() {
-  return `APPLICATION_STATUS: OK\nCLUSTER: ${
-    process.env.PORTILLO_CLUSTER
-      ? process.env.PORTILLO_CLUSTER
-      : "No env PORTILLO_CLUSTER set."
-  }\nHOSTNAME: ${os.hostname()}`;
-};
-
-/**
- * Cluster IP information (ops)
- */
-let _clusters = function _clusters() {
-  return {
-    "everest-teal": "13.80.31.209",
-    "everest-white": "104.46.44.26",
-    "everest-yellow": "52.174.92.242",
-    "everest-pink": "52.232.79.222",
-    "everest-grey": "52.174.238.136",
-    "everest-red": "52.166.33.229",
-    "everest-blue": "13.81.219.131",
-    "everest-black": "13.95.135.124"
-  };
+  return `APPLICATION_STATUS: OK\nHOSTNAME: ${os.hostname()}`;
 };
 
 /**
@@ -321,9 +222,7 @@ let _about = function _about() {
 module.exports = {
   index: index,
   error404: error404,
-  error5xx: error5xx,
   _monitor: _monitor,
   _about: _about,
-  robotstxt: _robotstxt,
-  _clusters: _clusters
+  robotstxt: _robotstxt
 };

@@ -42,7 +42,10 @@ const when = commit => {
       readable: moment.unix(toTimestamp(commit.commit.committer.date)).fromNow()
     };
   } catch (e) {
-    console.log("Error", e);
+    logger.log.error(
+      `Unable to create an object for when the commit '${commit}' was done.`,
+      e
+    );
   }
   return result;
 };

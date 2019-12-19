@@ -44,7 +44,6 @@ const getCommit = async (name, commit) => {
   // Later when implemting client cert auth...
   /*
   json = await getPrivateCommit(name, commit);
-  console.log("Private resonse", json);
   return json;
   */
 };
