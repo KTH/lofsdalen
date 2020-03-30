@@ -30,7 +30,7 @@ const applicationInsights = () => {
  */
 let header = function header(title) {
   return `<!DOCTYPE html>
-    <!-- Served by Tamarack -->
+    <!-- Served by Lofsdalen -->
     <html lang="en">
     <head>
         <title>${title}</title>
@@ -153,7 +153,7 @@ let footer = function footer(statusCode) {
     statusCodeParagraph = "";
   }
   return `
-        <p class="small">Page served by: Tamarack</p>${statusCodeParagraph}</div>
+        <p class="small">Page served by: Lofsdalen</p>${statusCodeParagraph}</div>
         </body>
     </html>
 `;
@@ -165,10 +165,7 @@ let footer = function footer(statusCode) {
 let error404 = function error404() {
   return `
     ${header(`Page not found`)}
-        <h1>Sorry, we have nothing to show for the web address you entered.</h1>
-        <h2>The service may have been moved or deleted.</h2>
-        <p>Please also check the web address for proper spelling and capitalization, or try
-        <a href="https://www.kth.se/search/">searching for it</a>.</p>
+        <h1>Sorry, no api endpoint matching your request.</h1>
     ${footer(statusCodes.NOT_FOUND)}
     `;
 };
