@@ -4,6 +4,6 @@
 
 module.exports = {
   jenkinsBuildDate: "Not set by CI.",
-  dockerName: "Not set by CI.",
-  dockerVersion: "Not set by CI."
+  dockerName: "lofsdalen",
+  dockerVersion: "0.0.0_abcdef",
 };

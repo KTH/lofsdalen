@@ -1,36 +1,49 @@
 /*jshint esversion: 8 */
 
 const express = require("express");
+const defaultEnvs = require("@kth/default-envs");
+const httpResponse = require("@kth/http-responses");
 const app = express();
 const git = require("./modules/git");
 const about = require("./config/version");
-const logger = require("./modules/logger");
-const httpResponse = require("./modules/httpResponse.js");
-const templates = require("./modules/templates");
+const { log } = require("./modules/logger");
+
+const { templates } = require("@kth/basic-html-templates");
 const controller = require("./modules/controller");
 const os = require("os");
-const packageFile = require("./package.json");
+const started = new Date();
 
 /**
- * Start server on port 80, or use port specifed in env PORT.
+ * Let the package @kth/http-responses use the Tamarack log.
  */
-app.pathPrefix = function() {
-  return process.env.PATH_PREFIX ? process.env.PATH_PREFIX : "/api/lofsdalen";
-};
+httpResponse.setLogger(log);
 
 /**
- * Start server on port 80, or use port specifed in env PORT.
+ * Process env:s that are not configured on start up, but accessed
+ * as envs in the application are added with there default values.
+ *
+ * They are also logged.
+ *
+ * This way you will always have a value for process.env.X
  */
-app.port = function() {
-  return process.env.PORT ? process.env.PORT : 80;
-};
+defaultEnvs.set(
+  {
+    PORT: 80,
+    LOG_LEVEL: "info",
+    PATH_PREFIX: "/api/lofsdalen",
+    APPINSIGHTS_INSTRUMENTATIONKEY: "",
+  },
+  log
+);
 
 /**
  * Start the server on configured port.
  */
-app.listen(app.port(), function() {
-  logger.log.info(
-    `Started ${packageFile.name} on ${os.hostname()}:${app.port()}`
+app.listen(process.env.PORT, function () {
+  log.info(
+    `Started '${about.dockerName}:${
+      about.dockerVersion
+    }' on '${os.hostname()}:${process.env.PORT}'`
   );
 });
 
@@ -39,8 +52,12 @@ app.listen(app.port(), function() {
 /**
  * Index page.
  */
-app.get(`${app.pathPrefix}`, function(req, response) {
-  httpResponse.ok(req, response, templates.index());
+app.get("/", function (request, response) {
+  httpResponse.ok(
+    request,
+    response,
+    templates.index((title = "Lofsdalen - Git commit helper"))
+  );
 });
 
 /**
@@ -49,18 +66,26 @@ app.get(`${app.pathPrefix}`, function(req, response) {
  * http://localhost:3000/api/lofsdalen/v1/lofsdalen/4b1c21f
  *
  */
-app.get(`${app.pathPrefix}/v1/:repoName/:commit`, async function(req, res) {
-  const { repoName, commit } = req.params;
+app.get(`${process.env.PATH_PREFIX}/v1/:repoName/:commit`, async function (
+  request,
+  response
+) {
+  const { repoName, commit } = request.params;
   const commitJson = await git.getCommit(repoName, commit);
 
   if (commitJson) {
-    httpResponse.ok(req, res, commitJson);
+    httpResponse.ok(
+      request,
+      response,
+      commitJson,
+      httpResponse.contentTypes.JSON
+    );
   } else {
     httpResponse.notFound(
-      req,
-      res,
+      request,
+      response,
       {
-        Message: `Cound not find any commit matching '${repoName}' and hash  '${commit}'.`
+        Message: `Cound not find any commit matching '${repoName}' and hash  '${commit}'.`,
       },
       httpResponse.contentTypes.JSON
     );
@@ -81,21 +106,26 @@ app.get(`${app.pathPrefix}/v1/:repoName/:commit`, async function(req, res) {
  *  "readable":"15 days ago"
  * }
  */
-app.get(`${app.pathPrefix()}/v1/:repoName/:commit/when`, async function(
-  req,
-  res
+app.get(`${process.env.PATH_PREFIX}/v1/:repoName/:commit/when`, async function (
+  request,
+  response
 ) {
-  const { repoName, commit } = req.params;
+  const { repoName, commit } = request.params;
   const commitJson = await git.getCommit(repoName, commit);
 
   if (commitJson) {
-    httpResponse.ok(req, res, controller.when(commitJson));
+    httpResponse.ok(
+      request,
+      response,
+      controller.when(commitJson),
+      httpResponse.contentTypes.JSON
+    );
   } else {
     httpResponse.notFound(
-      req,
-      res,
+      request,
+      response,
       {
-        Message: `Cound not find any commit matching '${repoName}' and hash  '${commit}'.`
+        Message: `Cound not find any commit matching '${repoName}' and hash  '${commit}'.`,
       },
       httpResponse.contentTypes.JSON
     );
@@ -105,37 +135,44 @@ app.get(`${app.pathPrefix()}/v1/:repoName/:commit/when`, async function(
 /**
  * Health check route.
  */
-app.get(`${app.pathPrefix}/_monitor`, function(req, res) {
+app.get(`${process.env.PATH_PREFIX}/_monitor`, function (request, response) {
   httpResponse.ok(
-    req,
-    res,
-    templates._monitor(),
+    request,
+    response,
+    templates._monitor((status = "OK")),
     httpResponse.contentTypes.PLAIN_TEXT
   );
 });
 
 /**
- * Information about the application.
+ * About page. Versions and such.
  */
-app.get(`${app.pathPrefix}/_about`, function(req, res) {
-  httpResponse.ok(req, res, templates._about(), httpResponse.contentTypes.HTML);
+app.get("/_about", function (request, response) {
+  httpResponse.ok(request, response, templates._about(about, started));
 });
 
 /**
  * Crawler access definitions.
  */
-app.get(`${app.pathPrefix}/robots.txt`, function(req, res) {
+app.get(`${process.env.PATH_PREFIX}/robots.txt`, function (request, response) {
   httpResponse.ok(
-    req,
-    res,
+    request,
+    response,
     templates.robotstxt(),
     httpResponse.contentTypes.PLAIN_TEXT
   );
 });
 
 /**
+ * Ignore favicons.
+ */
+app.get("${process.env.PATH_PREFIX}/favicon.ico", function (request, response) {
+  httpResponse.noContent(request, response);
+});
+
+/**
  * Default route, if no other route is matched (404 Not Found).
  */
-app.use(function(req, res) {
-  httpResponse.notFound(req, res, templates.error404());
+app.use(function (request, response) {
+  httpResponse.notFound(request, response, templates.error404());
 });

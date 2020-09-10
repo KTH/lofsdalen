@@ -2,14 +2,15 @@
 
 const https = require("https");
 const logger = require("./logger");
-const httpResponse = require("./httpResponse");
+const httpResponse = require("@kth/http-responses");
+const { templates } = require("@kth/basic-html-templates");
 const fetch = require("node-fetch");
 
 const FETCH_OPTIONS = {
   method: "get",
   headers: {
-    "User-Agent": "github.com/KTH/lofsdalen"
-  }
+    "User-Agent": "github.com/KTH/lofsdalen",
+  },
 };
 
 //https://api.github.com/repos/lofsdalen/commits/4b1c21f
@@ -80,5 +81,5 @@ const getPrivateCommit = async (name, commit) => {
  * Module exports
  */
 module.exports = {
-  getCommit: getCommit
+  getCommit: getCommit,
 };
