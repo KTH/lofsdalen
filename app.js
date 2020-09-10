@@ -147,7 +147,7 @@ app.get(`${process.env.PATH_PREFIX}/_monitor`, function (request, response) {
 /**
  * About page. Versions and such.
  */
-app.get("/_about", function (request, response) {
+app.get(`${process.env.PATH_PREFIX}/_about`, function (request, response) {
   httpResponse.ok(request, response, templates._about(about, started));
 });
 
