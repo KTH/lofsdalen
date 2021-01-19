@@ -15,9 +15,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@kth/basic-html-templates": "^1.0.32",
+    "@kth/basic-html-templates": "^1.0.34",
     "@kth/default-envs": "^0.0.13",
-    "@kth/http-responses": "^1.0.31",
+    "@kth/http-responses": "^1.0.32",
     "applicationinsights": "^1.8.8",
     "express": "^4.17.1",
     "moment": "^2.29.1",
@@ -27,7 +27,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^8.2.1",
-    "nodemon": "^2.0.6"
+    "nodemon": "^2.0.7"
   },
   "scripts": {
     "start": "node app.js",
