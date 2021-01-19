@@ -1,4 +1,4 @@
-FROM kthse/kth-nodejs:12.0.0
+FROM kthse/kth-nodejs:14.0.0
 
 RUN apk --no-cache add python3 make
 
