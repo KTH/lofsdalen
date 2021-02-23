@@ -52,7 +52,7 @@ app.listen(process.env.PORT, function () {
 /**
  * Index page.
  */
-app.get("/", function (request, response) {
+app.get(`${process.env.PATH_PREFIX}/`, function (request, response) {
   httpResponse.ok(
     request,
     response,
@@ -66,31 +66,31 @@ app.get("/", function (request, response) {
  * http://localhost:3000/api/lofsdalen/v1/lofsdalen/4b1c21f
  *
  */
-app.get(`${process.env.PATH_PREFIX}/v1/:repoName/:commit`, async function (
-  request,
-  response
-) {
-  const { repoName, commit } = request.params;
-  const commitJson = await git.getCommit(repoName, commit);
+app.get(
+  `${process.env.PATH_PREFIX}/v1/:repoName/:commit`,
+  async function (request, response) {
+    const { repoName, commit } = request.params;
+    const commitJson = await git.getCommit(repoName, commit);
 
-  if (commitJson) {
-    httpResponse.ok(
-      request,
-      response,
-      commitJson,
-      httpResponse.contentTypes.JSON
-    );
-  } else {
-    httpResponse.notFound(
-      request,
-      response,
-      {
-        Message: `Cound not find any commit matching '${repoName}' and hash  '${commit}'.`,
-      },
-      httpResponse.contentTypes.JSON
-    );
+    if (commitJson) {
+      httpResponse.ok(
+        request,
+        response,
+        commitJson,
+        httpResponse.contentTypes.JSON
+      );
+    } else {
+      httpResponse.notFound(
+        request,
+        response,
+        {
+          Message: `Cound not find any commit matching '${repoName}' and hash  '${commit}'.`,
+        },
+        httpResponse.contentTypes.JSON
+      );
+    }
   }
-});
+);
 
 /**
  * Get information about when the commit happend.
@@ -106,31 +106,31 @@ app.get(`${process.env.PATH_PREFIX}/v1/:repoName/:commit`, async function (
  *  "readable":"15 days ago"
  * }
  */
-app.get(`${process.env.PATH_PREFIX}/v1/:repoName/:commit/when`, async function (
-  request,
-  response
-) {
-  const { repoName, commit } = request.params;
-  const commitJson = await git.getCommit(repoName, commit);
+app.get(
+  `${process.env.PATH_PREFIX}/v1/:repoName/:commit/when`,
+  async function (request, response) {
+    const { repoName, commit } = request.params;
+    const commitJson = await git.getCommit(repoName, commit);
 
-  if (commitJson) {
-    httpResponse.ok(
-      request,
-      response,
-      controller.when(commitJson),
-      httpResponse.contentTypes.JSON
-    );
-  } else {
-    httpResponse.notFound(
-      request,
-      response,
-      {
-        Message: `Cound not find any commit matching '${repoName}' and hash  '${commit}'.`,
-      },
-      httpResponse.contentTypes.JSON
-    );
+    if (commitJson) {
+      httpResponse.ok(
+        request,
+        response,
+        controller.when(commitJson),
+        httpResponse.contentTypes.JSON
+      );
+    } else {
+      httpResponse.notFound(
+        request,
+        response,
+        {
+          Message: `Cound not find any commit matching '${repoName}' and hash  '${commit}'.`,
+        },
+        httpResponse.contentTypes.JSON
+      );
+    }
   }
-});
+);
 
 /**
  * Health check route.
