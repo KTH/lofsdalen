@@ -15,7 +15,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@kth/basic-html-templates": "^1.0.37",
+    "@kth/basic-html-templates": "^1.0.38",
     "@kth/default-envs": "^0.0.15",
     "@kth/http-responses": "^1.0.44",
     "applicationinsights": "^1.8.10",
