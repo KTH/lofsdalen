@@ -17,7 +17,7 @@
   "dependencies": {
     "@kth/basic-html-templates": "^1.0.43",
     "@kth/default-envs": "^0.0.16",
-    "@kth/http-responses": "^1.0.50",
+    "@kth/http-responses": "^1.0.51",
     "applicationinsights": "^1.8.10",
     "express": "^4.17.1",
     "moment": "^2.29.1",
